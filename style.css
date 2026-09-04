@@ -1,0 +1,662 @@
+/* ==============================
+   RESET
+   ============================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* ==============================
+   BODY
+   ============================== */
+
+body {
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+  color: #222;
+}
+
+
+/* ==============================
+   HEADER
+   ============================== */
+
+header {
+  background-color: #00B894;
+  width: 100%;
+}
+
+header section {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+header img {
+  width: 120px;
+  height: auto;
+}
+
+
+/* ==============================
+   NAVIGATION
+   ============================== */
+
+nav {
+  display: flex;
+  margin-left: 50px;
+  gap: 35px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+nav a:hover {
+  background-color: white;
+  color: green;
+  border-radius: 5px;
+}
+
+
+/* ==============================
+   MAIN CONTENT
+   ============================== */
+
+main {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+main h2 {
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+
+
+/* ==============================
+   LIVE MATCHES GRID
+   ============================== */
+
+#live-matches {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(350px, 1fr)
+  );
+  gap: 20px;
+}
+
+
+/* ==============================
+   MATCH CARD
+   ============================== */
+
+.match-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 18px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+
+/* Card hover */
+
+.match-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ==============================
+   MATCH TITLE
+   ============================== */
+
+.match-card h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+
+/* ==============================
+   SCORE AREA
+   ============================== */
+
+.score {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+
+  padding: 10px 0;
+  margin-bottom: 12px;
+}
+
+.score p {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 7px 0;
+}
+
+
+/* ==============================
+   MATCH STATUS
+   ============================== */
+
+.match-status {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+
+/* ==============================
+   MOBILE RESPONSIVE
+   ============================== */
+
+@media (max-width: 600px) {
+
+  header section {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  header img {
+    width: 90px;
+  }
+
+  nav {
+    margin-left: 0;
+    margin-top: 15px;
+    gap: 20px;
+  }
+
+  nav a {
+    font-size: 14px;
+  }
+
+  main {
+    margin-top: 20px;
+    padding: 0 10px;
+  }
+
+  #live-matches {
+    grid-template-columns: 1fr;
+  }
+
+  .match-card {
+    padding: 15px;
+  }
+
+}
+/* ==============================
+   MATCH STATUS BADGES
+   ============================== */
+
+.match-status-badge {
+  display: inline-block;
+
+  padding: 5px 10px;
+
+  border-radius: 4px;
+
+  font-size: 11px;
+
+  font-weight: bold;
+
+  letter-spacing: 0.5px;
+
+  background-color: #e74c3c;
+
+  color: white;
+}
+
+
+/* Completed matches */
+
+.match-card:has(.match-status-badge) {
+  /* Keep card styling normal */
+}
+
+
+/* ==============================
+   CARD TOP
+   ============================== */
+
+.card-top {
+  margin-bottom: 12px;
+}
+.match-status-badge.live {
+  background-color: #e74c3c;
+}
+
+.match-status-badge.completed {
+  background-color: #777;
+}
+/* ==============================
+   TEAMS
+   ============================== */
+
+.teams {
+  margin-top: 15px;
+}
+
+
+.team-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 12px 0;
+
+  border-top: 1px solid #eeeeee;
+}
+
+
+.team-name {
+  font-size: 15px;
+
+  font-weight: 500;
+
+  max-width: 75%;
+}
+
+
+.team-score-value {
+  font-size: 17px;
+
+  font-weight: bold;
+
+  text-align: right;
+}
+
+
+/* ==============================
+   OVERS
+   ============================== */
+
+.overs {
+  font-size: 13px;
+
+  color: #777;
+
+  margin-top: 5px;
+}
+
+
+/* ==============================
+   RESULT
+   ============================== */
+
+.match-result {
+  border-top: 1px solid #eeeeee;
+
+  margin-top: 12px;
+
+  padding-top: 12px;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+
+  color: #555;
+}
+/* ==============================
+   MATCH HEADER
+   ============================== */
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 12px;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+/* Match type */
+
+.match-type {
+  font-size: 11px;
+  font-weight: bold;
+  color: #777;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* ==============================
+   STATUS BADGES
+   ============================== */
+
+.match-status-badge {
+  display: inline-block;
+
+  padding: 5px 9px;
+
+  border-radius: 4px;
+
+  font-size: 10px;
+
+  font-weight: bold;
+
+  letter-spacing: 0.5px;
+
+  color: white;
+}
+
+
+.match-status-badge.live {
+  background-color: #e74c3c;
+}
+
+
+.match-status-badge.completed {
+  background-color: #777;
+}
+
+
+/* ==============================
+   TEAM INFORMATION
+   ============================== */
+
+.team-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  max-width: 70%;
+}
+
+
+.team-name {
+  font-size: 15px;
+
+  font-weight: 500;
+}
+
+
+.team-info small {
+  font-size: 11px;
+
+  color: #888;
+}
+
+
+/* ==============================
+   TEAM SCORE
+   ============================== */
+
+.team-score-value {
+  font-size: 17px;
+
+  font-weight: bold;
+
+  white-space: nowrap;
+}
+
+
+/* ==============================
+   TEAM ROW
+   ============================== */
+
+.team-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+/* ==============================
+   VENUE
+   ============================== */
+
+.venue {
+  font-size: 12px;
+
+  color: #777;
+
+  margin-top: 12px;
+}
+
+
+/* ==============================
+   RESULT
+   ============================== */
+
+.match-result {
+  margin-top: 12px;
+
+  padding-top: 12px;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+
+  color: #555;
+}
+/* ==============================
+   SEARCH AND FILTER CONTROLS
+   ============================== */
+
+.match-controls {
+  margin-bottom: 25px;
+}
+
+
+/* SEARCH BOX */
+
+#search-input {
+  width: 100%;
+  max-width: 500px;
+
+  padding: 12px 15px;
+
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+
+  font-size: 14px;
+
+  outline: none;
+
+  margin-bottom: 15px;
+}
+
+
+#search-input:focus {
+  border-color: #00B894;
+}
+
+
+/* FILTER BUTTON CONTAINER */
+
+.filter-buttons {
+  display: flex;
+
+  gap: 10px;
+}
+
+
+/* BUTTON */
+
+.filter-btn {
+  padding: 8px 18px;
+
+  border: 1px solid #dddddd;
+
+  background-color: white;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+/* BUTTON HOVER */
+
+.filter-btn:hover {
+  background-color: #eeeeee;
+}
+
+
+/* ACTIVE BUTTON */
+
+.filter-btn.active {
+  background-color: #00B894;
+
+  color: white;
+
+  border-color: #00B894;
+}
+/* ==============================
+   FOOTER
+   ============================== */
+
+footer {
+  background-color: #222;
+  color: white;
+
+  margin-top: 60px;
+}
+
+
+/* Footer main area */
+
+.footer-container {
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 45px 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    2fr 1fr 1fr 1.5fr;
+
+  gap: 40px;
+}
+
+
+/* Footer headings */
+
+.footer-container h3 {
+  font-size: 16px;
+
+  margin-bottom: 15px;
+}
+
+
+/* About text */
+
+.footer-about p,
+.footer-info p {
+  color: #bbb;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+  max-width: 300px;
+}
+
+
+/* Footer links */
+
+.footer-links {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.footer-links a {
+  color: #bbb;
+
+  text-decoration: none;
+
+  font-size: 13px;
+}
+
+
+.footer-links a:hover {
+  color: #00B894;
+}
+
+
+/* Bottom copyright */
+
+.footer-bottom {
+  border-top: 1px solid #444;
+
+  text-align: center;
+
+  padding: 18px 20px;
+}
+
+
+.footer-bottom p {
+  color: #999;
+
+  font-size: 12px;
+}
+
+
+/* ==============================
+   MOBILE FOOTER
+   ============================== */
+
+@media (max-width: 700px) {
+
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 30px;
+  }
+
+}
+
+
+@media (max-width: 450px) {
+
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+}
