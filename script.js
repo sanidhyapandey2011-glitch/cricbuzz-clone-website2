@@ -1,12 +1,14 @@
 // =========================================
-// CRICLIVE API
+// CRICKETDATA.ORG API
 // =========================================
 
-// IMPORTANT:
-// Put your API key between the quotation marks.
-// Do NOT send your key to me.
+// Put your CricketData.org API key here.
+// Keep your key private.
+const API_KEY = "cad35ade-73d8-42bf-babd-afe67fcb1bd4";
 
-const API_KEY = "273|87YAeSoNtOSF3acmffdndOS07CIHx8CrJUWRkgkhbc482973";
+// API endpoint
+const API_URL =
+    `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`;
 
 
 // =========================================
@@ -29,32 +31,36 @@ const completedBtn =
     document.getElementById("completed-btn");
 
 
+// =========================================
+// VARIABLES
+// =========================================
+
 let allMatches = [];
 
 let currentFilter = "all";
 
 
 // =========================================
-// GET LIVE MATCHES FROM API
+// GET MATCHES FROM CRICKETDATA.ORG
 // =========================================
 
 async function getMatches() {
 
-    console.log("Getting cricket matches...");
+    console.log("🏏 Getting cricket matches...");
+
+    // Show loading message
+    if (liveMatches) {
+
+        liveMatches.innerHTML =
+            "<p>Loading cricket matches...</p>";
+
+    }
+
 
     try {
 
-        const response = await fetch(
-            "https://cricketliveapi.com/api/v1/cricket/live",
-            {
-                method: "GET",
-
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Accept": "application/json"
-                }
-            }
-        );
+        const response =
+            await fetch(API_URL);
 
 
         console.log(
@@ -63,7 +69,17 @@ async function getMatches() {
         );
 
 
-        const data = await response.json();
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP Error: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
 
 
         console.log(
@@ -72,27 +88,35 @@ async function getMatches() {
         );
 
 
-        // =================================
-        // CHECK API RESPONSE
-        // =================================
+        // =========================================
+        // API ERROR CHECK
+        // =========================================
 
-        if (!response.ok) {
+        if (
+            data.status &&
+            data.status !== "success"
+        ) {
 
             console.error(
                 "API ERROR:",
                 data
             );
 
+
             liveMatches.innerHTML =
-                "<p>API error. Check the Console.</p>";
+                `<p>API Error: ${
+                    data.reason ||
+                    "Unable to load matches."
+                }</p>`;
 
             return;
+
         }
 
 
-        // =================================
-        // GET MATCH DATA
-        // =================================
+        // =========================================
+        // CHECK MATCH DATA
+        // =========================================
 
         if (!Array.isArray(data.data)) {
 
@@ -101,26 +125,26 @@ async function getMatches() {
                 data
             );
 
+
             liveMatches.innerHTML =
                 "<p>No match data received.</p>";
 
             return;
+
         }
 
 
-        allMatches = data.data;
+        allMatches =
+            data.data;
 
 
         console.log(
-            "Matches received:",
+            "✅ Matches received:",
             allMatches.length
         );
 
 
-        // =================================
-        // DISPLAY
-        // =================================
-
+        // Display matches
         displayMatches();
 
     }
@@ -129,13 +153,17 @@ async function getMatches() {
     catch (error) {
 
         console.error(
-            "FETCH ERROR:",
+            "❌ FETCH ERROR:",
             error
         );
 
 
-        liveMatches.innerHTML =
-            "<p>Unable to connect to cricket API.</p>";
+        liveMatches.innerHTML = `
+            <p>
+                Unable to connect to CricketData API.
+                Check the Console.
+            </p>
+        `;
 
     }
 
@@ -148,8 +176,17 @@ async function getMatches() {
 
 function displayMatches() {
 
+    if (!liveMatches) {
+        return;
+    }
+
+
     liveMatches.innerHTML = "";
 
+
+    // =========================================
+    // SEARCH TEXT
+    // =========================================
 
     const searchText =
         searchInput
@@ -159,75 +196,81 @@ function displayMatches() {
             : "";
 
 
+    // =========================================
+    // FILTER MATCHES
+    // =========================================
+
     const filteredMatches =
         allMatches.filter(match => {
 
 
-            // =================================
-            // SEARCHABLE TEXT
-            // =================================
-
+            // Team names
             const teams =
-                match.teams || "";
+                Array.isArray(match.teams)
+                    ? match.teams.join(" ")
+                    : "";
+
+
+            const name =
+                match.name || "";
 
 
             const status =
                 match.status || "";
 
 
-            const format =
-                match.format || "";
+            const matchType =
+                match.matchType || "";
 
 
             const venue =
                 match.venue || "";
 
 
-            const series =
-                match.series || "";
-
-
             const searchableText =
-                `${teams} ${status} ${format} ${venue} ${series}`
-                    .toLowerCase();
+                `
+                ${teams}
+                ${name}
+                ${status}
+                ${matchType}
+                ${venue}
+                `
+                .toLowerCase();
 
 
+            // Search
             const matchesSearch =
                 searchableText.includes(
                     searchText
                 );
 
 
-            // =================================
-            // STATUS FILTER
-            // =================================
+            // =========================================
+            // FILTER STATUS
+            // =========================================
 
             let matchesFilter = true;
 
 
+            // LIVE
             if (
                 currentFilter === "live"
             ) {
 
                 matchesFilter =
-                    status
-                        .toLowerCase()
-                        .includes("live");
+                    match.matchStarted === true &&
+                    match.matchEnded !== true;
 
             }
 
 
+            // COMPLETED
             if (
                 currentFilter === "completed"
             ) {
 
                 matchesFilter =
-                    status
-                        .toLowerCase()
-                        .includes("completed") ||
-                    status
-                        .toLowerCase()
-                        .includes("finished");
+                    match.matchEnded === true;
 
             }
 
@@ -240,9 +283,9 @@ function displayMatches() {
         });
 
 
-    // =================================
+    // =========================================
     // NO RESULTS
-    // =================================
+    // =========================================
 
     if (
         filteredMatches.length === 0
@@ -252,12 +295,13 @@ function displayMatches() {
             "<p>No matches found.</p>";
 
         return;
+
     }
 
 
-    // =================================
+    // =========================================
     // CREATE MATCH CARDS
-    // =================================
+    // =========================================
 
     filteredMatches.forEach(
         match => {
@@ -277,59 +321,186 @@ function displayMatches() {
 function createMatchCard(match) {
 
 
-    // =================================
-    // MATCH INFORMATION
-    // =================================
+    // =========================================
+    // TEAM NAMES
+    // =========================================
 
-    const teams =
-        match.teams ||
-        "Teams unavailable";
+    let team1 =
+        "Team 1";
 
-
-    const score =
-        match.score ||
-        "Score unavailable";
-
-
-    const status =
-        match.status ||
-        "LIVE";
-
-
-    const format =
-        match.format ||
-        "CRICKET";
-
-
-    const venue =
-        match.venue ||
-        "";
-
-
-    const series =
-        match.series ||
-        "";
-
-
-    // =================================
-    // STATUS STYLE
-    // =================================
-
-    let statusText =
-        status.toUpperCase();
-
-
-    let statusClass =
-        "live";
-
-
-    const lowerStatus =
-        status.toLowerCase();
+    let team2 =
+        "Team 2";
 
 
     if (
-        lowerStatus.includes("completed") ||
-        lowerStatus.includes("finished")
+        Array.isArray(match.teams)
+    ) {
+
+        team1 =
+            match.teams[0] ||
+            "Team 1";
+
+        team2 =
+            match.teams[1] ||
+            "Team 2";
+
+    }
+
+
+    // =========================================
+    // MATCH INFORMATION
+    // =========================================
+
+    const status =
+        match.status ||
+        "Status unavailable";
+
+
+    const matchType =
+        match.matchType
+            ? match.matchType.toUpperCase()
+            : "CRICKET";
+
+
+    const venue =
+        match.venue || "";
+
+
+    const matchName =
+        match.name || "";
+
+
+    // =========================================
+    // GET SCORES
+    // =========================================
+
+    const scoreArray =
+        Array.isArray(match.score)
+            ? match.score
+            : [];
+
+
+    let team1Scores = [];
+
+    let team2Scores = [];
+
+
+    scoreArray.forEach(
+        inning => {
+
+
+            const inningName =
+                (
+                    inning.inning ||
+                    ""
+                )
+                .toLowerCase();
+
+
+            // =========================================
+            // SCORE TEXT
+            // =========================================
+
+            const runs =
+                inning.r !== undefined
+                    ? inning.r
+                    : "-";
+
+
+            const wickets =
+                inning.w !== undefined
+                    ? inning.w
+                    : "-";
+
+
+            const overs =
+                inning.o !== undefined
+                    ? inning.o
+                    : "-";
+
+
+            const scoreText =
+                `${runs}/${wickets} (${overs} Ov)`;
+
+
+            // =========================================
+            // IDENTIFY TEAM
+            // =========================================
+
+            if (
+                inningName.includes(
+                    team1.toLowerCase()
+                )
+            ) {
+
+                team1Scores.push(
+                    scoreText
+                );
+
+            }
+
+
+            else if (
+                inningName.includes(
+                    team2.toLowerCase()
+                )
+            ) {
+
+                team2Scores.push(
+                    scoreText
+                );
+
+            }
+
+        }
+    );
+
+
+    // =========================================
+    // FINAL SCORE TEXT
+    // =========================================
+
+    const team1Score =
+        team1Scores.length > 0
+            ? team1Scores.join(" & ")
+            : "Yet to bat";
+
+
+    const team2Score =
+        team2Scores.length > 0
+            ? team2Scores.join(" & ")
+            : "Yet to bat";
+
+
+    // =========================================
+    // MATCH STATUS
+    // =========================================
+
+    let statusText =
+        "UPCOMING";
+
+    let statusClass =
+        "upcoming";
+
+
+    // Live match
+    if (
+        match.matchStarted === true &&
+        match.matchEnded !== true
+    ) {
+
+        statusText =
+            "LIVE";
+
+        statusClass =
+            "live";
+
+    }
+
+
+    // Completed match
+    if (
+        match.matchEnded === true
     ) {
 
         statusText =
@@ -341,9 +512,9 @@ function createMatchCard(match) {
     }
 
 
-    // =================================
-    // CREATE CARD
-    // =================================
+    // =========================================
+    // CREATE MATCH CARD
+    // =========================================
 
     const matchCard =
         document.createElement("div");
@@ -353,16 +524,16 @@ function createMatchCard(match) {
         "match-card";
 
 
-    // =================================
+    // =========================================
     // CARD HTML
-    // =================================
+    // =========================================
 
     matchCard.innerHTML = `
 
         <div class="match-header">
 
             <span class="match-type">
-                ${format.toUpperCase()}
+                ${escapeHTML(matchType)}
             </span>
 
             <span
@@ -373,36 +544,64 @@ function createMatchCard(match) {
         </div>
 
 
+        ${
+            matchName
+                ? `
+                    <div class="match-series">
+                        ${escapeHTML(matchName)}
+                    </div>
+                `
+                : ""
+        }
+
+
         <div class="teams">
 
-            <div class="team-row">
 
-                <div class="team-info">
-
-                    <span class="team-name">
-                        ${teams}
-                    </span>
-
-                </div>
-
-            </div>
-
+            <!-- TEAM 1 -->
 
             <div class="team-row">
 
                 <div class="team-info">
 
                     <span class="team-name">
-                        SCORE
+                        ${escapeHTML(team1)}
                     </span>
 
                 </div>
+
 
                 <span class="team-score-value">
-                    ${score}
+
+                    ${escapeHTML(team1Score)}
+
                 </span>
 
             </div>
+
+
+
+            <!-- TEAM 2 -->
+
+            <div class="team-row">
+
+                <div class="team-info">
+
+                    <span class="team-name">
+                        ${escapeHTML(team2)}
+                    </span>
+
+                </div>
+
+
+                <span class="team-score-value">
+
+                    ${escapeHTML(team2Score)}
+
+                </span>
+
+            </div>
+
 
         </div>
 
@@ -411,18 +610,7 @@ function createMatchCard(match) {
             venue
                 ? `
                     <div class="venue">
-                        📍 ${venue}
-                    </div>
-                `
-                : ""
-        }
-
-
-        ${
-            series
-                ? `
-                    <div class="match-series">
-                        ${series}
+                        📍 ${escapeHTML(venue)}
                     </div>
                 `
                 : ""
@@ -431,7 +619,7 @@ function createMatchCard(match) {
 
         <div class="match-result">
 
-            ${status}
+            ${escapeHTML(status)}
 
         </div>
 
@@ -441,6 +629,24 @@ function createMatchCard(match) {
     liveMatches.appendChild(
         matchCard
     );
+
+}
+
+
+// =========================================
+// ESCAPE HTML
+// =========================================
+// Prevents API text from accidentally being
+// interpreted as HTML.
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
 }
 
@@ -507,11 +713,14 @@ if (allBtn) {
             currentFilter =
                 "all";
 
+
             removeActiveButton();
+
 
             allBtn.classList.add(
                 "active"
             );
+
 
             displayMatches();
 
@@ -534,11 +743,14 @@ if (liveBtn) {
             currentFilter =
                 "live";
 
+
             removeActiveButton();
+
 
             liveBtn.classList.add(
                 "active"
             );
+
 
             displayMatches();
 
@@ -561,11 +773,14 @@ if (completedBtn) {
             currentFilter =
                 "completed";
 
+
             removeActiveButton();
+
 
             completedBtn.classList.add(
                 "active"
             );
+
 
             displayMatches();
 
@@ -576,7 +791,7 @@ if (completedBtn) {
 
 
 // =========================================
-// START
+// START WEBSITE
 // =========================================
 
 getMatches();
